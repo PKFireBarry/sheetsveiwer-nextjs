@@ -3,11 +3,7 @@
 import {
   useState,
   useRef,
-  type JSXElementConstructor,
   type Key,
-  type ReactElement,
-  type ReactNode,
-  type ReactPortal,
 } from "react"
 import { ChevronLeft, ChevronRight, MapPin, Building, Clock, Globe, Briefcase, DollarSign } from "lucide-react"
 
@@ -259,17 +255,17 @@ export default function Home() {
                       | number
                       | bigint
                       | boolean
-                      | ReactElement<unknown, string | JSXElementConstructor<any>>
-                      | Iterable<ReactNode>
-                      | ReactPortal
+
+
+
                       | Promise<
                           | string
                           | number
                           | bigint
                           | boolean
-                          | ReactPortal
-                          | ReactElement<unknown, string | JSXElementConstructor<any>>
-                          | Iterable<ReactNode>
+
+
+
                           | null
                           | undefined
                         >
