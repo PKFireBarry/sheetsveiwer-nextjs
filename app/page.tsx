@@ -246,42 +246,22 @@ export default function Home() {
           </div>
 
           {getFieldValue("skills") && (
-            <div className="mb-8">
-              <h3 className="text-xl font-semibold mb-3 text-blue-400">Skills</h3>
-              <div className="flex flex-wrap gap-2">
-                {parseJSON(getFieldValue("skills")).map(
-                  (
-                    skill:
-                      | string
-                      | number
-                      | bigint
-                      | boolean
-
-
-
-                      | Promise<
-                          | string
-                          | number
-                          | bigint
-                          | boolean
-
-
-
-                          | null
-                          | undefined
-                        >
-                      | null
-                      | undefined,
-                    index: Key | null | undefined,
-                  ) => (
-                    <span key={index} className="px-3 py-1 bg-blue-900 text-blue-200 rounded-full text-sm">
-                      {skill}
-                    </span>
-                  ),
-                )}
-              </div>
-            </div>
-          )}
+  <div className="mb-8">
+    <h3 className="text-xl font-semibold mb-3 text-blue-400">Skills</h3>
+    <div className="flex flex-wrap gap-2">
+      {parseJSON(getFieldValue("skills")).map(
+        (
+          skill: string | number | bigint | boolean | null | undefined,
+          index: Key | null | undefined,
+        ) => (
+          <span key={index} className="px-3 py-1 bg-blue-900 text-blue-200 rounded-full text-sm">
+            {skill}
+          </span>
+        ),
+      )}
+    </div>
+  </div>
+)}
 
           {getFieldValue("company_website") && (
             <div className="mt-8">
