@@ -61,18 +61,18 @@ export default function Home() {
   }
 
   const formatDate = (dateString: string | number | Date) => {
-    if (!dateString) return ""
+    if (!dateString) return "";
     try {
-      const date = new Date(dateString)
+      const date = new Date(dateString);
       return date.toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
         year: "numeric",
-      })
-    } catch (e) {
-      return dateString
+      });
+    } catch {
+      return dateString;
     }
-  }
+  };
 
   const parseJSON = (str: string) => {
     try {
