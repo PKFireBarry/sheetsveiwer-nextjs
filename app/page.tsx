@@ -76,11 +76,12 @@ export default function Home() {
 
   const parseJSON = (str: string) => {
     try {
-      return JSON.parse(str)
+      const parsed = JSON.parse(str);
+      return Array.isArray(parsed) ? parsed : [];
     } catch {
-      return str
+      return [];
     }
-  }
+  };
 
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     setStartX(e.touches[0].clientX)
