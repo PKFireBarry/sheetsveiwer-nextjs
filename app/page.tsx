@@ -305,3 +305,5 @@ export default function Home() {
 
       <div className="text-center mt-6 text-sm text-gray-400">Swipe left or right to navigate between jobs</div>
     </div>
+  )
+}
