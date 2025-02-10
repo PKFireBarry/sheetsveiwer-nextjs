@@ -43,9 +43,9 @@ export default function Home() {
     setError(null)
     try {
       const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${id}/values/${RANGE}?key=${API_KEY}`)
-
+  
       if (!response.ok) throw new Error("Failed to fetch data")
-
+  
       const result = await response.json()
       const headers = result.values[0]
       const rows = result.values.slice(1)
@@ -53,7 +53,7 @@ export default function Home() {
       setData([headers, ...rows.reverse()])
       setCurrentIndex(1)
       setLoading(false)
-    } catch (err: any) {
+    } catch (err: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
       console.error("Error fetching data:", err)
       setError(err.message)
       setLoading(false)
