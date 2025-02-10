@@ -9,7 +9,6 @@ import {
   type ReactNode,
   type ReactPortal,
 } from "react"
-import type React from "react"
 import { ChevronLeft, ChevronRight, MapPin, Building, Clock, Globe, Briefcase, DollarSign } from "lucide-react"
 
 export default function Home() {
@@ -23,8 +22,8 @@ export default function Home() {
   const [spreadsheetId, setSpreadsheetId] = useState("")
   const cardRef = useRef<HTMLDivElement | null>(null)
 
-  const API_KEY = process.env.NEXT_PUBLIC_API_KEY
-  const RANGE = process.env.NEXT_PUBLIC_RANGE
+  const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
+  const RANGE = process.env.NEXT_PUBLIC_RANGE;
 
   // Extract spreadsheet ID from URL
   const extractSpreadsheetId = (url: string) => {
@@ -58,9 +57,9 @@ export default function Home() {
       setData([headers, ...rows.reverse()])
       setCurrentIndex(1)
       setLoading(false)
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error fetching data:", err)
-      setError((err as Error).message)
+      setError(err.message)
       setLoading(false)
     }
   }
@@ -74,16 +73,16 @@ export default function Home() {
         day: "numeric",
         year: "numeric",
       })
-    } catch {
+    } catch (e) {
       return dateString
     }
   }
 
-  const parseJSON = (str: string): (string | number | boolean)[] => {
+  const parseJSON = (str: string) => {
     try {
       return JSON.parse(str)
     } catch {
-      return []
+      return str
     }
   }
 
@@ -158,7 +157,7 @@ export default function Home() {
   const headers = data[0] || []
   const currentRow = data[currentIndex] || []
   const getFieldValue = (fieldName: string) => {
-    const index = (headers as string[]).findIndex((header) => header.toLowerCase() === fieldName.toLowerCase())
+    const index = headers.findIndex((header) => header.toLowerCase() === fieldName.toLowerCase())
     return index !== -1 ? currentRow[index] : ""
   }
 
@@ -255,7 +254,27 @@ export default function Home() {
               <div className="flex flex-wrap gap-2">
                 {parseJSON(getFieldValue("skills")).map(
                   (
-                    skill: string | number | boolean,
+                    skill:
+                      | string
+                      | number
+                      | bigint
+                      | boolean
+                      | ReactElement<unknown, string | JSXElementConstructor<any>>
+                      | Iterable<ReactNode>
+                      | ReactPortal
+                      | Promise<
+                          | string
+                          | number
+                          | bigint
+                          | boolean
+                          | ReactPortal
+                          | ReactElement<unknown, string | JSXElementConstructor<any>>
+                          | Iterable<ReactNode>
+                          | null
+                          | undefined
+                        >
+                      | null
+                      | undefined,
                     index: Key | null | undefined,
                   ) => (
                     <span key={index} className="px-3 py-1 bg-blue-900 text-blue-200 rounded-full text-sm">
