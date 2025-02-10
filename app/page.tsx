@@ -9,6 +9,7 @@ import {
   type ReactNode,
   type ReactPortal,
 } from "react"
+import type React from "react"
 import { ChevronLeft, ChevronRight, MapPin, Building, Clock, Globe, Briefcase, DollarSign } from "lucide-react"
 
 export default function Home() {
@@ -18,12 +19,13 @@ export default function Home() {
   const [currentIndex, setCurrentIndex] = useState(1)
   const [startX, setStartX] = useState<number | null>(null)
   const [offsetX, setOffsetX] = useState(0)
+  const [deleting, setDeleting] = useState(false)
   const [sheetUrl, setSheetUrl] = useState("")
   const [spreadsheetId, setSpreadsheetId] = useState("")
   const cardRef = useRef<HTMLDivElement | null>(null)
 
-  const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
-  const RANGE = process.env.NEXT_PUBLIC_RANGE;
+  const API_KEY = process.env.NEXT_PUBLIC_API_KEY
+  const RANGE = process.env.NEXT_PUBLIC_RANGE
 
   // Extract spreadsheet ID from URL
   const extractSpreadsheetId = (url: string) => {
@@ -57,13 +59,14 @@ export default function Home() {
       setData([headers, ...rows.reverse()])
       setCurrentIndex(1)
       setLoading(false)
-    } catch (err: any) {
+    } catch (err) {
       console.error("Error fetching data:", err)
-      setError(err.message)
+      setError((err as Error).message)
       setLoading(false)
     }
   }
 
+  // Rest of the functions remain the same
   const formatDate = (dateString: string | number | Date) => {
     if (!dateString) return ""
     try {
@@ -86,6 +89,7 @@ export default function Home() {
     }
   }
 
+  // Touch handlers and navigation functions remain the same
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     setStartX(e.touches[0].clientX)
   }
@@ -114,6 +118,53 @@ export default function Home() {
       setCurrentIndex(currentIndex - 1)
     } else if (direction === "next" && currentIndex < data.length - 1) {
       setCurrentIndex(currentIndex + 1)
+    }
+  }
+
+  // Modified delete function to work with the reversed order
+  const deleteRow = async () => {
+    if (!confirm("Are you sure you want to delete this job posting?")) return
+
+    try {
+      setDeleting(true)
+      // Calculate the actual row number in the sheet (accounting for reverse order)
+      const totalRows = data.length
+      const actualRowIndex = totalRows - currentIndex
+
+      const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}:batchUpdate`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          requests: [
+            {
+              deleteDimension: {
+                range: {
+                  sheetId: 0,
+                  dimension: "ROWS",
+                  startIndex: actualRowIndex - 1,
+                  endIndex: actualRowIndex,
+                },
+              },
+            },
+          ],
+        }),
+      })
+
+      if (!response.ok) throw new Error("Failed to delete row")
+
+      const newData = data.filter((_, index) => index !== currentIndex)
+      setData(newData)
+
+      if (currentIndex >= newData.length - 1) {
+        setCurrentIndex(Math.max(1, newData.length - 2))
+      }
+    } catch (err) {
+      console.error("Error deleting row:", err)
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -157,10 +208,11 @@ export default function Home() {
   const headers = data[0] || []
   const currentRow = data[currentIndex] || []
   const getFieldValue = (fieldName: string) => {
-    const index = headers.findIndex((header) => header.toLowerCase() === fieldName.toLowerCase())
+    const index = (headers as string[]).findIndex((header) => header.toLowerCase() === fieldName.toLowerCase())
     return index !== -1 ? currentRow[index] : ""
   }
 
+  // Rest of the JSX remains the same as before
   return (
     <div className="min-h-screen bg-gray-900 p-6">
       <div className="flex items-center justify-between mb-6 max-w-2xl mx-auto">
@@ -198,6 +250,7 @@ export default function Home() {
         </button>
       </div>
 
+      {/* Rest of the card component remains the same */}
       <div
         ref={cardRef}
         className="max-w-2xl mx-auto bg-black text-white rounded-xl shadow-lg overflow-hidden transform transition-transform"
@@ -209,6 +262,7 @@ export default function Home() {
         onTouchEnd={handleTouchEnd}
       >
         <div className="p-8">
+          {/* Date and Delete Button */}
           <div className="flex justify-between items-center mb-6">
             <div className="text-sm text-gray-400">
               <Clock size={16} className="inline mr-1" />
@@ -216,12 +270,14 @@ export default function Home() {
             </div>
           </div>
 
+          {/* Title and Company */}
           <h2 className="text-3xl font-bold mb-3 text-blue-400">{getFieldValue("title")}</h2>
           <div className="flex items-center gap-2 mb-6">
             <Building size={18} className="text-gray-400" />
             <span className="font-semibold text-lg">{getFieldValue("company_name")}</span>
           </div>
 
+          {/* Key Details */}
           <div className="grid grid-cols-2 gap-6 mb-8">
             <div className="flex items-center gap-3">
               <MapPin size={18} className="text-gray-400" />
@@ -243,11 +299,13 @@ export default function Home() {
             )}
           </div>
 
+          {/* Description */}
           <div className="mb-8">
             <h3 className="text-xl font-semibold mb-3 text-blue-400">Description</h3>
             <p className="text-gray-300 whitespace-pre-wrap">{getFieldValue("description")}</p>
           </div>
 
+          {/* Skills */}
           {getFieldValue("skills") && (
             <div className="mb-8">
               <h3 className="text-xl font-semibold mb-3 text-blue-400">Skills</h3>
@@ -286,6 +344,7 @@ export default function Home() {
             </div>
           )}
 
+          {/* Company Website */}
           {getFieldValue("company_website") && (
             <div className="mt-8">
               <a
