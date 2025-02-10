@@ -74,16 +74,16 @@ export default function Home() {
         day: "numeric",
         year: "numeric",
       })
-    } catch (e) {
+    } catch {
       return dateString
     }
   }
 
-  const parseJSON = (str: string) => {
+  const parseJSON = (str: string): (string | number | boolean)[] => {
     try {
       return JSON.parse(str)
     } catch {
-      return str
+      return []
     }
   }
 
@@ -255,27 +255,7 @@ export default function Home() {
               <div className="flex flex-wrap gap-2">
                 {parseJSON(getFieldValue("skills")).map(
                   (
-                    skill:
-                      | string
-                      | number
-                      | bigint
-                      | boolean
-                      | ReactElement<unknown, string | JSXElementConstructor<any>>
-                      | Iterable<ReactNode>
-                      | ReactPortal
-                      | Promise<
-                          | string
-                          | number
-                          | bigint
-                          | boolean
-                          | ReactPortal
-                          | ReactElement<unknown, string | JSXElementConstructor<any>>
-                          | Iterable<ReactNode>
-                          | null
-                          | undefined
-                        >
-                      | null
-                      | undefined,
+                    skill: string | number | boolean,
                     index: Key | null | undefined,
                   ) => (
                     <span key={index} className="px-3 py-1 bg-blue-900 text-blue-200 rounded-full text-sm">
